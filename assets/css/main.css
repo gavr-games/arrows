@@ -1,0 +1,16 @@
+.alert:empty {
+  display: none;
+}
+.help-block {
+  color: red;
+}
+#game canvas{
+  display: block;
+  margin: 0 auto;
+}
+#player-1-name {
+  color: red;
+}
+#player-2-name {
+  color: blue;
+}

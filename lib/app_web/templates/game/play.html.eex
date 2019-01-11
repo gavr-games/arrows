@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-2">
+    <div class="card">
+      <div class="card-body">
+        Player 1: <b id="player-1-name"><%= player_name(@game.user1) %></b> <br />
+        Player 2: <b id="player-2-name"><%= player_name(@game.user2) %></b> <br/>
+        Status: <b id="game-status"><%= status_text(@game.status) %></b>
+      </div>
+      <div class="card-body">
+        <a class="btn btn-danger btn-lg card-link" href="<%= Routes.game_game_path(@conn, :exit, @game.id) %>" role="button">Exit</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-10">
+    <div id="game"></div>
+  </div>
+</div>
+<script>window.gameId = <%= @game.id %>;</script>

@@ -1,0 +1,21 @@
+<div class="jumbotron mt-5">
+  <h1 class="display-4">Balls game</h1>
+  <p class="lead">
+    <ul>
+      <li>Use arrows to navigate where your balls go</li>
+      <li>To capture a cell you need to capture all 4 arrows around it</li>
+      <li>Each captured cell gives +1 hitpoint to your new balls</li>
+      <li>Destroy the base of your opponent</li>
+    </ul>
+  </p>
+  <hr class="my-4">
+  <%= if is_logged_in(@conn) do %>
+    <p>Hello, <b><%= current_user(@conn).name %></b>!</p>
+    <a class="btn btn-primary btn-lg" href="<%= Routes.game_path(@conn, :join) %>" role="button">Play</a>
+    <a class="btn btn-danger btn-lg" href="<%= Routes.user_path(@conn, :logout) %>" role="button">Logout</a>
+  <% else %>
+    <p>Just Sign In or Sign Up and play for free.</p>
+    <a class="btn btn-primary btn-lg" href="<%= Routes.user_path(@conn, :login) %>" role="button">Sign in</a>
+    <a class="btn btn-success btn-lg" href="<%= Routes.user_path(@conn, :new) %>" role="button">Sign Up</a>
+  <% end %>
+</div>
