@@ -39,11 +39,11 @@ class Cell {
         this.graphics.clear()
       } else if (this.player != player) {
         this.graphics.clear()
-        this.player = player
         this.graphics.fillStyle((this.config.player1 == player) ? this.config.player1_color : this.config.player2_color, 0.3);
         let square = new Phaser.Geom.Rectangle(this.x, this.y, this.width, this.height);
         this.graphics.fillRectShape(square);
       }
+      this.player = player
     }
   }
 }

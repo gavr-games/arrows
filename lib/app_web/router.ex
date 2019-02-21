@@ -29,6 +29,7 @@ defmodule AppWeb.Router do
     get "/", PageController, :index
     get  "/login", UserController, :login
     post  "/auth", UserController, :authenticate
+    post  "/auth_guest", UserController, :authenticate_guest
     get  "/logout", UserController, :logout
     get "/signup", UserController, :new
     post "/register", UserController, :create

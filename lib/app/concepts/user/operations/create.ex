@@ -5,8 +5,8 @@ defmodule App.User.Operations.Create do
 
   def call(user_params) do
     result = success(user_params)
-             ~>> fn user_params -> encrypt_password_param(user_params) end
-             ~>> fn updated_params -> create(updated_params) end
+            ~>> fn user_params -> encrypt_password_param(user_params) end
+            ~>> fn updated_params -> create(updated_params) end
 
     if success?(result) do
       success(unwrap!(result))
@@ -27,6 +27,9 @@ defmodule App.User.Operations.Create do
   end
 
   def encrypt_password_param(user_params) do
-    success(Map.put(user_params, "password", Comeonin.Argon2.hashpwsalt(user_params["password"])))
+    case user_params["password"] do
+      "" -> success(user_params)
+      pass -> success(Map.put(user_params, "password", Comeonin.Argon2.hashpwsalt(pass)))
+    end
   end
 end

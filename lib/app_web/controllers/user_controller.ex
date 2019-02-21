@@ -5,6 +5,7 @@ defmodule AppWeb.UserController do
   alias App.User.Operations.{Create}
   alias App.Session.Operations.Destroy, as: DestroySession
   alias App.Session.Operations.Create, as: CreateSession
+  alias App.Session.Operations.CreateGuest, as: CreateGuestSession
 
   plug AppWeb.Plugs.Authenticated when action in [:logout]
   plug AppWeb.Plugs.NotAuthenticated when action in [:new, :create, :login, :authenticate]
@@ -58,6 +59,21 @@ defmodule AppWeb.UserController do
      conn
      |> put_flash(:error, result.error)
      |> render("login.html")
+    end
+  end
+
+  def authenticate_guest(conn, login_params) do
+    result = CreateGuestSession.call(conn, login_params)
+
+    if success?(result) do
+     conn = unwrap!(result)
+     conn
+     |> put_flash(:info, "Welcome!")
+     |> redirect(to: "/")
+    else
+     conn
+     |> put_flash(:error, "Name has already been taken!")
+     |> redirect(to: "/")
     end
   end
 end

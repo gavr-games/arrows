@@ -1,4 +1,4 @@
-# The Balls game
+# The Arrows game
 Elixir/Phoenix based game.
 
 ## Getting started
@@ -14,4 +14,10 @@ Now you can visit [`localhost`](http://localhost) from your browser.
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
 ## TODO
+* countdown before game starts
+* merge balls
+* dynamic window height (mobile)
+* adds
+* list games
 * deploy
+* bot

@@ -15,6 +15,7 @@ defmodule App.User do
   def changeset(user, attrs \\ %{}) do
     user
     |> cast(attrs, [:name, :email, :password])
+    |> unique_constraint(:name)
     |> validate_required([:name, :password])
   end
 end
