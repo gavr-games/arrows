@@ -47,7 +47,13 @@ class Game {
     this.load.image('arrow_p1', '/images/sprites/arrow_p1.png');
     this.load.image('arrow_p2', '/images/sprites/arrow_p2.png');
   }
-  create() {}
+  create() {
+    let minSize = Math.min(window.innerHeight - document.getElementById('game-info').clientHeight, document.getElementById('game').clientWidth, 840)
+    this.game.resize(minSize, minSize)
+    game.width = minSize
+    game.height = minSize
+    console.log(this.width)
+  }
   update() {
     if (!game.gameConfig || game.status != "running") {
       return;
@@ -76,6 +82,7 @@ class Game {
     let graphics = scene.add.graphics({ lineStyle: { width: 4, color: gridColor } })
     let cell_height = (this.height - this.padding * 2) / board.config.rows
     let cell_width = (this.width - this.padding * 2) / board.config.cols
+    console.log(this.width)
     for(let i = 0; i <= board.config.rows; i++) {
       let line = new Phaser.Geom.Line(this.padding, this.padding + i * cell_height, this.width - this.padding, this.padding + i * cell_height);
       graphics.strokeLineShape(line);

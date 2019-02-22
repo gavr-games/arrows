@@ -15,8 +15,7 @@ Now you can visit [`localhost`](http://localhost) from your browser.
 
 ## TODO
 * countdown before game starts
-* merge balls
-* dynamic window height (mobile)
+* merge balls (?)
 * adds
 * list games
 * bot
