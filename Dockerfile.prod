@@ -1,0 +1,38 @@
+FROM elixir:1.8.1-alpine as builder
+
+RUN apk --update --upgrade add build-base curl nodejs nodejs-npm
+
+# Install hex
+RUN mix local.hex --force
+RUN mix local.rebar --force
+
+# Copy source
+WORKDIR /app
+COPY . .
+
+# Initial setup
+RUN mix deps.get --only prod
+RUN MIX_ENV=prod mix compile
+
+# Install node modules
+RUN cd assets && npm install && cd ..
+
+# Compile assets
+RUN cd assets && ./node_modules/.bin/webpack --mode production && cd ..
+
+RUN mix phx.digest
+
+# Stage 2
+FROM elixir:1.8.1-alpine
+
+RUN mix local.hex --force
+
+# Copy source
+WORKDIR /app
+
+COPY --from=builder /app /app
+RUN rm -rf assets
+
+EXPOSE 4000
+
+CMD ["mix", "phx.server"]

@@ -11,7 +11,7 @@ Elixir/Phoenix based game.
 Now you can visit [`localhost`](http://localhost) from your browser.
 
 ## Deploy 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+- `./bin/deploy.sh`
 
 ## TODO
 * countdown before game starts
@@ -19,5 +19,8 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 * dynamic window height (mobile)
 * adds
 * list games
-* deploy
 * bot
+* create logo
+* championships
+* delete guest users
+* add jump ball ability (cooldown per ball)

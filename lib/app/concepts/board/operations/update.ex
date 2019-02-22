@@ -6,10 +6,10 @@ defmodule App.Board.Operations.Update do
     board
       |> inc_turn()
       |> move_balls()
+      |> generate_balls()
       |> detect_collisions()
       |> detect_base_collisions()
       |> capture_arrows()
-      |> generate_balls()
       |> change_balls_directions()
   end
 

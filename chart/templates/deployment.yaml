@@ -1,0 +1,36 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: "{{ include "chart.fullname" . }}-web-deployment"
+  labels:
+    app.kubernetes.io/name: "{{ include "chart.name" . }}-web"
+    helm.sh/chart: {{ include "chart.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "{{ include "chart.name" . }}-web"
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "{{ include "chart.name" . }}-web"
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: "{{ .Chart.Name }}-web"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: "{{ include "chart.name" . }}-web-config"
+            - secretRef:
+                name: "{{ include "chart.name" . }}-web-secret"
+          ports:
+            - name: http
+              containerPort: 4000
+              protocol: TCP
+      imagePullSecrets:
+        - name: regcred
