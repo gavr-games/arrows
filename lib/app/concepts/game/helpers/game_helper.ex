@@ -6,9 +6,12 @@ defmodule App.Game.Helper do
   @rows 8
   @cols 8
   @base_health 10
-  @cell_width 10
-  @ball_speed 5
-  @new_ball_period 4
+  @cell_width 10 # abstract units
+  @ball_speed 5 # abstract units
+  @new_ball_period 4 # in ticks
+  @jump_cooldown 8 # in ticks
+  @jump_speed 10 # abstract units
+  @jump_duration 1 # in ticks
 
   def game_status_code(s) do
     case s do
@@ -44,5 +47,17 @@ defmodule App.Game.Helper do
 
   def game_new_ball_period() do
     @new_ball_period
+  end
+
+  def game_jump_cooldown() do
+    @jump_cooldown
+  end
+
+  def game_jump_speed() do
+    @jump_speed
+  end
+
+  def game_jump_duration() do
+    @jump_duration
   end
 end

@@ -10,7 +10,8 @@ defmodule App.Board.Operations.Init do
         base_health: game_base_health(),
         cell_width: game_cell_width(),
         ball_speed: game_ball_speed(),
-        new_ball_period: game_new_ball_period()
+        new_ball_period: game_new_ball_period(),
+        jump_speed: game_jump_speed()
       }
       _ -> config
     end

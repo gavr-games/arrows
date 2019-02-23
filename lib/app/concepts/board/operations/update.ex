@@ -1,5 +1,7 @@
 defmodule App.Board.Operations.Update do
+  import App.Game.Helper
   alias App.Cell.Operations.CountPerPlayer
+  alias App.Ball.Operations.{ Move, StartJump, StopJump }
   require Logger
 
   def call(board) do
@@ -7,10 +9,12 @@ defmodule App.Board.Operations.Update do
       |> inc_turn()
       |> move_balls()
       |> generate_balls()
+      |> stop_jumps()
       |> detect_collisions()
       |> detect_base_collisions()
       |> capture_arrows()
       |> change_balls_directions()
+      |> start_jumps()
   end
 
   defp inc_turn(board) do
@@ -18,22 +22,21 @@ defmodule App.Board.Operations.Update do
   end
 
   defp move_balls(board) do
-    balls = for {k, v} <- board[:balls], into: %{}, do: {k, move_ball(v)}
+    balls = for {k, v} <- board[:balls], into: %{}, do: {k, Move.call(v)}
     board
       |> Map.put(:balls, balls)
   end
 
-  defp move_ball(ball) do
-    {new_x, new_y} = case ball[:direction] do
-      0 -> {ball[:x], ball[:y] - ball[:speed]}
-      1 -> {ball[:x] + ball[:speed], ball[:y]}
-      2 -> {ball[:x], ball[:y] + ball[:speed]}
-      3 -> {ball[:x] - ball[:speed], ball[:y]}
-      _ -> {ball[:x], ball[:y] - ball[:speed]}
-    end
-    ball
-      |> Map.put(:x, new_x)
-      |> Map.put(:y, new_y)
+  defp start_jumps(board) do
+    balls = for {k, v} <- board[:balls], into: %{}, do: {k, StartJump.call(v)}
+    board
+      |> Map.put(:balls, balls)
+  end
+
+  defp stop_jumps(board) do
+    balls = for {k, v} <- board[:balls], into: %{}, do: {k, StopJump.call(v)}
+    board
+      |> Map.put(:balls, balls)
   end
 
   defp get_new_ball_direction(board, ball) do
@@ -51,7 +54,7 @@ defmodule App.Board.Operations.Update do
     balls = Enum.reduce(balls, board[:balls], fn {k, ball}, resulting_balls ->
       case Map.has_key?(resulting_balls, k) do
         true  ->
-          case Enum.find(resulting_balls, fn {k2, ball2} -> k != k2 && ball[:x] == ball2[:x] && ball[:y] == ball2[:y] && ball2[:player] != ball[:player] end) do
+          case Enum.find(resulting_balls, fn {k2, ball2} -> k != k2 && ball[:x] == ball2[:x] && ball[:y] == ball2[:y] && ball2[:player] != ball[:player] && ball[:jump] != true && ball2[:jump] != true end) do
             {collision_key, collision_ball} ->
               resulting_balls = case ball[:health] - collision_ball[:health] <= 0 do
                 true -> 
@@ -129,7 +132,10 @@ defmodule App.Board.Operations.Update do
           health: CountPerPlayer.call(board[:player1], board) + 1,
           player: board[:player1],
           direction: board[:arrows][0][0][:direction],
-          speed: board[:config][:ball_speed]
+          speed: board[:config][:ball_speed],
+          jump: false,
+          want_jump: false,
+          jump_cooldown: 0
         }
         ball2 = %{
           x: board[:config][:cols] * board[:config][:cell_width],
@@ -137,7 +143,10 @@ defmodule App.Board.Operations.Update do
           health: CountPerPlayer.call(board[:player2], board) + 1,
           player: board[:player2],
           direction: board[:arrows][board[:config][:rows] * board[:config][:cell_width]][board[:config][:cols] * board[:config][:cell_width]][:direction],
-          speed: board[:config][:ball_speed]
+          speed: board[:config][:ball_speed],
+          jump: false,
+          want_jump: false,
+          jump_cooldown: 0
         }
         board = put_in board[:balls]["#{board[:turn]}_p1"], ball
         board = put_in board[:balls]["#{board[:turn]}_p2"], ball2

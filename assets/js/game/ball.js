@@ -11,7 +11,7 @@ class Ball {
     this.y = null
     this.graphics = null
     this.text = null
-    this.maxBallHelathRadius = 6
+    this.maxBallHealthRadius = 6
     this.update(ball.x, ball.y, ball.health, ball.direction)
   }
 

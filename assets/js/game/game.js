@@ -4,7 +4,6 @@ import Arrow from "./arrow"
 import Ball from "./ball"
 import Cell from "./cell"
 import Utils from "./utils"
-import {channel} from "../socket"
 
 const gridColor = 0xcccccc //grey
 const base1Color = 0xff0000 //red
@@ -52,7 +51,6 @@ class Game {
     this.game.resize(minSize, minSize)
     game.width = minSize
     game.height = minSize
-    console.log(this.width)
   }
   update() {
     if (!game.gameConfig || game.status != "running") {
@@ -82,7 +80,6 @@ class Game {
     let graphics = scene.add.graphics({ lineStyle: { width: 4, color: gridColor } })
     let cell_height = (this.height - this.padding * 2) / board.config.rows
     let cell_width = (this.width - this.padding * 2) / board.config.cols
-    console.log(this.width)
     for(let i = 0; i <= board.config.rows; i++) {
       let line = new Phaser.Geom.Line(this.padding, this.padding + i * cell_height, this.width - this.padding, this.padding + i * cell_height);
       graphics.strokeLineShape(line);
@@ -104,7 +101,6 @@ class Game {
         this.arrows[arrowY][arrowX] = new Arrow(scene, this.baseConfig(board), board.arrows[arrowY.toString()][arrowX.toString()])
       }
     }
-    scene.input.on('gameobjectdown',this.onArrowClicked);
 
     // Cells
     for(let y = 0; y < board.config.rows; y++) {
@@ -167,10 +163,6 @@ class Game {
 
   updateArrow(arrow) {
     this.arrows[arrow.y][arrow.x].update(arrow.player, arrow.direction)
-  }
-
-  onArrowClicked(p, arrow) {
-    channel.push("change_arrow", {x: arrow.originalX, y: arrow.originalY})
   }
 
   finish(payload) {

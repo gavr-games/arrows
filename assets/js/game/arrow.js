@@ -1,3 +1,5 @@
+import {channel} from "../socket"
+
 class Arrow {
   constructor(scene, config, arrow) {
     this.config = config
@@ -28,6 +30,7 @@ class Arrow {
       }
       this.sprite = this.scene.add.sprite(this.config.field_padding + this.x, this.config.field_padding + this.y, arrowSprite).setOrigin(0.5, 0.5);
       this.sprite.setInteractive()
+      this.sprite.on('pointerdown', () => this.onClick() );
       this.sprite.originalX = this.originalX
       this.sprite.originalY = this.originalY
     }
@@ -36,6 +39,11 @@ class Arrow {
       this.sprite.angle = direction * 90
     }
   }
+
+  onClick() {
+    channel.push("change_arrow", {x: this.originalX, y: this.originalY})
+  }
 }
+
 
 export default Arrow;

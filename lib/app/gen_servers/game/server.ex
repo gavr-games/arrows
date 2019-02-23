@@ -103,4 +103,11 @@ defmodule App.Game.Server do
     AppWeb.Endpoint.broadcast "game:#{state[:game].id}", "update_arrow", %{arrow: board[:arrows][y][x]}
     {:noreply, Map.put(state, :board, board)}
   end
+
+  def handle_cast({:jump_ball, ball_id, player}, state) do
+    game_id = state[:game].id
+    Logger.info "Jump ball for game with id #{game_id}"
+    board = Jump.call(state[:board], ball_id, player)
+    {:noreply, Map.put(state, :board, board)}
+  end
 end

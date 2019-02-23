@@ -24,6 +24,15 @@ defmodule AppWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("jump_ball", %{"ball_id" => ball_id}, socket) do
+    case GenServer.whereis(ref(socket.assigns.game_id)) do
+      nil -> nil
+      process -> 
+        GenServer.cast(process, {:jump_ball, ball_id, socket.assigns.user_id})
+    end
+    {:noreply, socket}
+  end
+
   defp ref(game_id) do
     {:global, {:game_server, game_id}}
   end

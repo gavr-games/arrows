@@ -23,3 +23,4 @@ Now you can visit [`localhost`](http://localhost) from your browser.
 * championships
 * delete guest users
 * add jump ball ability (cooldown per ball)
+* no Draw if someone exits
