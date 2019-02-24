@@ -5,6 +5,7 @@ defmodule App.Game.Server do
   alias App.Board.Operations.{Init, Update}
   alias App.Game.Operations.Exit
   alias App.Arrow.Operations.ChangeDirection
+  alias App.Ball.Operations.Jump
 
   def create(game) do
     case GenServer.whereis(ref(game.id)) do

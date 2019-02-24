@@ -14,7 +14,6 @@ Now you can visit [`localhost`](http://localhost) from your browser.
 - `./bin/deploy.sh`
 
 ## TODO
-* countdown before game starts
 * merge balls (?)
 * adds
 * list games
@@ -22,5 +21,6 @@ Now you can visit [`localhost`](http://localhost) from your browser.
 * create logo
 * championships
 * delete guest users
-* add jump ball ability (cooldown per ball)
-* no Draw if someone exits
+* no "Draw" if someone exits
+* delete games with no actions taken
+* tutorial

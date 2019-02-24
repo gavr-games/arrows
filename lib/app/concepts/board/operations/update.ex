@@ -93,7 +93,7 @@ defmodule App.Board.Operations.Update do
 
   defp capture_arrow(board, ball) do
     arrow = get_in(board, [:arrows, ball[:y], ball[:x]])
-    case arrow[:player] == ball[:player] do
+    case arrow[:player] == ball[:player] || ball[:jump] do
       true -> arrow
       false -> 
         arrow = arrow 

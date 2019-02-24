@@ -11,7 +11,7 @@ defmodule App.Game.Helper do
   @new_ball_period 4 # in ticks
   @jump_cooldown 8 # in ticks
   @jump_speed 10 # abstract units
-  @jump_duration 1 # in ticks
+  @jump_duration 2 # in ticks
 
   def game_status_code(s) do
     case s do

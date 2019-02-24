@@ -22,9 +22,11 @@ defmodule App.Ball.Operations.Jump do
   defp can_jump(ball) do 
     #simulate jump to check if the ball is not too close to the borders
     ball = ball
+      |> Map.put(:want_jump, true)
       |> Move.call()
       |> StartJump.call()
-    ball = Enum.reduce((0..game_jump_duration()), ball, fn _, b -> Move.call(b) end)
+    jumps_count = game_jump_duration() - 1
+    ball = Enum.reduce((0..jumps_count), ball, fn _, b -> Move.call(b) end)
     ball[:x] >= 0 && ball[:y] >= 0 && ball[:x] <= max_x() && ball[:y] <= max_y()
   end
 

@@ -26,6 +26,7 @@ class Game {
     this.height = 840
     this.padding = 20
     this.gameConfig = null
+    this.countdownText = null
     let config = {
       width: this.width,
       height: this.height,
@@ -56,10 +57,10 @@ class Game {
     if (!game.gameConfig || game.status != "running") {
       return;
     }
-    let speed = (game.width - game.padding * 2) / game.gameConfig.rows / game.gameConfig.cell_width * game.gameConfig.ball_speed / 60
     let ballKeys = Object.keys(game.balls)
     for(let i = 0; i < ballKeys.length; i++) {
       let ball = game.balls[ballKeys[i]]
+      let speed = (game.width - game.padding * 2) / game.gameConfig.rows / game.gameConfig.cell_width * ball.speed / 60
       let x = ball.x
       let y = ball.y
       switch (ball.direction) {
@@ -142,11 +143,11 @@ class Game {
     }
     let new_balls_keys = update_balls_keys.filter(key => !current_balls_keys.includes(key))
     for (let i = 0; i < new_balls_keys.length; i ++) {
-      this.balls[new_balls_keys[i]] = new Ball(scene, this.baseConfig(board), board.balls[new_balls_keys[i]])
+      this.balls[new_balls_keys[i]] = new Ball(scene, this.baseConfig(board), new_balls_keys[i], board.balls[new_balls_keys[i]])
     }
     let same_balls_keys = update_balls_keys.filter(key => current_balls_keys.includes(key))
     for (let i = 0; i < same_balls_keys.length; i ++) {
-      this.balls[same_balls_keys[i]].update(board.balls[same_balls_keys[i]].x, board.balls[same_balls_keys[i]].y, board.balls[same_balls_keys[i]].health, board.balls[same_balls_keys[i]].direction)
+      this.balls[same_balls_keys[i]].update(board.balls[same_balls_keys[i]])
     }
 
     // Cells
@@ -157,8 +158,8 @@ class Game {
         this.cells[cellY][cellX].update(board.arrows)
       }
     }
-    
-    this.turn++;
+    this.turn = board["turn"]
+    this.showCountdown(this.turn)
   }
 
   updateArrow(arrow) {
@@ -182,6 +183,33 @@ class Game {
       color: color,
       align: 'center',
     }).setFontSize(this.height / 8).setOrigin(0.5, 0.5)
+  }
+
+  showCountdown(turn) {
+    if (turn > 4 && this.countdownText === null) {
+      return
+    }
+    if (turn > 4) {
+      this.countdownText.destroy()
+      this.countdownText = null
+      return
+    }
+    let text = 4 - turn
+    if (text == 0) {
+      text = "Go"
+    }
+    let scene = this.game.scene.getAt(0)
+    let color = Utils.decimalColorToHTMLcolor(drawColor)
+
+    if (this.countdownText === null) {
+      this.countdownText = scene.add.text(this.width / 2, this.height / 2, text,{
+        fontFamily: 'Arial',
+        color: color,
+        align: 'center',
+      }).setFontSize(this.height / 8).setOrigin(0.5, 0.5).setDepth(10)
+    } else {
+      this.countdownText.setText(text)
+    }
   }
 
   baseConfig(board) {
