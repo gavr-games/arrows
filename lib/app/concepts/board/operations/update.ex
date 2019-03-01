@@ -1,7 +1,7 @@
 defmodule App.Board.Operations.Update do
   import App.Game.Helper
   alias App.Cell.Operations.CountPerPlayer
-  alias App.Ball.Operations.{ Move, StartJump, StopJump }
+  alias App.Ball.Operations.{ Move, StartJump, StopJump, ChangeDirection }
   require Logger
 
   def call(board) do
@@ -15,6 +15,7 @@ defmodule App.Board.Operations.Update do
       |> capture_arrows()
       |> change_balls_directions()
       |> start_jumps()
+      |> merge_balls()
   end
 
   defp inc_turn(board) do
@@ -37,16 +38,6 @@ defmodule App.Board.Operations.Update do
     balls = for {k, v} <- board[:balls], into: %{}, do: {k, StopJump.call(v)}
     board
       |> Map.put(:balls, balls)
-  end
-
-  defp get_new_ball_direction(board, ball) do
-    case get_in(board, [:arrows, ball[:y], ball[:x]]) do
-      nil -> ball[:direction]
-      arrow -> case arrow[:direction] do
-        nil -> ball[:direction]
-        dir -> dir
-      end
-    end
   end
 
   defp detect_collisions(board) do
@@ -172,8 +163,25 @@ defmodule App.Board.Operations.Update do
   end
 
   defp change_balls_directions(board) do
-    balls = for {k, ball} <- board[:balls], into: %{}, do: {k, Map.put(ball, :direction, get_new_ball_direction(board, ball))}
+    balls = for {k, v} <- board[:balls], into: %{}, do: {k, ChangeDirection.call(board, v)}
     board
       |> Map.put(:balls, balls)
+  end
+
+  defp merge_balls(board) do
+    balls = board[:balls]
+    balls = Enum.reduce(balls, board[:balls], fn {k, ball}, resulting_balls ->
+      case Map.has_key?(resulting_balls, k) do
+        true  ->
+          case Enum.find(resulting_balls, fn {k2, ball2} -> k != k2 && ball[:x] == ball2[:x] && ball[:y] == ball2[:y] && ball2[:player] == ball[:player] && ball[:jump] != true && ball2[:jump] != true && ball[:direction] == ball2[:direction] end) do
+            {collision_key, collision_ball} ->
+              resulting_balls = put_in(resulting_balls[k][:health], ball[:health] + collision_ball[:health])
+              Map.drop(resulting_balls, [collision_key])
+            nil -> resulting_balls
+          end
+        false -> resulting_balls
+      end
+    end)
+    Map.put(board, :balls, balls)
   end
 end

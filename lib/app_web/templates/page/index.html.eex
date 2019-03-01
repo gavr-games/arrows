@@ -7,7 +7,7 @@
       <li>To capture a cell you need to capture all 4 arrows around it</li>
       <li>Each captured cell gives +1 hitpoint to your new balls</li>
       <li>Destroy the base of your opponent</li>
-      <li>Click the ball to give it temporary acceeration. While accelerated the ball cannot capture arrows or hit other balls. Acceleration has a cooldown</li>
+      <li>Click the ball to give it temporary acceleration. While accelerated the ball cannot capture arrows or hit other balls. Acceleration has a cooldown</li>
     </ul>
   </p>
   <hr class="my-4">

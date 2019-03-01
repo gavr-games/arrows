@@ -14,7 +14,6 @@ Now you can visit [`localhost`](http://localhost) from your browser.
 - `./bin/deploy.sh`
 
 ## TODO
-* merge balls (?)
 * adds
 * list games
 * bot
@@ -24,3 +23,4 @@ Now you can visit [`localhost`](http://localhost) from your browser.
 * no "Draw" if someone exits
 * delete games with no actions taken
 * tutorial
+* real time lag, ping to server
