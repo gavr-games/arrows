@@ -1,5 +1,4 @@
 defmodule App.Ball.Operations.ChangeDirection do
-  import App.Game.Helper
 
   def call(board, ball) do
     Map.put(ball, :direction, get_new_ball_direction(board, ball))

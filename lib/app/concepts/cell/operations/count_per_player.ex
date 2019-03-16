@@ -1,5 +1,4 @@
 defmodule App.Cell.Operations.CountPerPlayer do
-  import App.Game.Helper
   require Logger
 
   def call(player, board) do

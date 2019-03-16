@@ -3,7 +3,7 @@
     Player 1: <b id="player-1-name"><%= player_name(@game.user1) %></b>
   </div>
   <div class="col-3">
-    Player 2: <b id="player-2-name"><%= player_name(@game.user2) %></b>
+    Player 2: <b id="player-2-name"><%= player_name(@game.user2) %> <%= add_bot_link(@conn, @game) %></b>
   </div>
   <div class="col-3">
     Status: <b id="game-status"><%= status_text(@game.status) %></b>

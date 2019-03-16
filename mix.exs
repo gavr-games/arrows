@@ -46,6 +46,9 @@ defmodule App.MixProject do
       {:monadex, "~> 1.1"},
       {:comeonin, "~> 4.1"},
       {:argon2_elixir, "~> 1.3"},
+      {:faker, "~> 0.12"},
+      {:httpoison, "~> 1.4"},
+      {:poison, "~> 3.1"},
     ]
   end
 

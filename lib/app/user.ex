@@ -7,6 +7,7 @@ defmodule App.User do
     field :email, :string
     field :name, :string
     field :password, :string
+    field :is_bot, :boolean
 
     timestamps()
   end
@@ -14,7 +15,7 @@ defmodule App.User do
   @doc false
   def changeset(user, attrs \\ %{}) do
     user
-    |> cast(attrs, [:name, :email, :password])
+    |> cast(attrs, [:name, :email, :password, :is_bot])
     |> unique_constraint(:name)
     |> validate_required([:name, :password])
   end

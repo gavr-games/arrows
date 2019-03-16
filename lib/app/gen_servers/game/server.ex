@@ -2,10 +2,13 @@ defmodule App.Game.Server do
   use GenServer
   require Logger
   import App.Game.Helper
+  alias App.Repo
+  alias App.User
   alias App.Board.Operations.{Init, Update}
   alias App.Game.Operations.Exit
   alias App.Arrow.Operations.ChangeDirection
   alias App.Ball.Operations.Jump
+  alias App.Bot.Operations.Move, as: BotMove
 
   def create(game) do
     case GenServer.whereis(ref(game.id)) do
@@ -38,6 +41,7 @@ defmodule App.Game.Server do
     case state[:game].status do
       1 -> #running
         schedule_timer()
+        init_bot(state[:game])
         {:noreply, Map.put(state, :board, Init.call(state[:game]))}
       0 -> #new
         {:noreply, state}
@@ -66,9 +70,25 @@ defmodule App.Game.Server do
     end
   end
 
+  def handle_info(:move_bot, state) do
+    game_id = state[:game].id
+    Logger.info "Move Bot for game with id #{game_id}"
+    case state[:game].status do
+      1 -> #running
+        board = BotMove.call(state[:board])
+        schedule_bot_timer()
+        {:noreply, Map.put(state, :board, board)}
+      0 -> #new
+        {:noreply, state}
+      _ ->
+        {:stop, :normal, state}
+    end
+  end
+
   def handle_info(%{event: "start"}, state) do
     game_id = state[:game].id
     Logger.info "Start game with id #{game_id}"
+    init_bot(state[:game])
     schedule_timer()
     {:noreply, %{game: Map.put(state[:game], :status, game_status_code("running")), board: Init.call(state[:game])}}
   end
@@ -97,6 +117,10 @@ defmodule App.Game.Server do
     Process.send_after self(), :update, game_tick()
   end
 
+  defp schedule_bot_timer() do
+    Process.send_after self(), :move_bot, game_tick()
+  end
+
   def handle_cast({:change_arrow, x, y, player}, state) do
     game_id = state[:game].id
     Logger.info "Change arrow for game with id #{game_id}"
@@ -110,5 +134,13 @@ defmodule App.Game.Server do
     Logger.info "Jump ball for game with id #{game_id}"
     board = Jump.call(state[:board], ball_id, player)
     {:noreply, Map.put(state, :board, board)}
+  end
+
+  defp init_bot(game) do
+    user2 = Repo.get!(User, game.user2_id)
+    case user2.is_bot do
+      nil -> nil
+      _ -> Process.send_after self(), :move_bot, Kernel.trunc(game_tick() / 2)
+    end
   end
 end

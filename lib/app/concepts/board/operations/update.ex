@@ -1,8 +1,6 @@
 defmodule App.Board.Operations.Update do
-  import App.Game.Helper
   alias App.Cell.Operations.CountPerPlayer
   alias App.Ball.Operations.{ Move, StartJump, StopJump, ChangeDirection }
-  require Logger
 
   def call(board) do
     board

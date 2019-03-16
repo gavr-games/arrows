@@ -43,3 +43,4 @@ npm-debug.log
 
 .env
 chart/templates/secret.yaml
+.DS_Store

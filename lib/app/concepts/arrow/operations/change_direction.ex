@@ -1,5 +1,4 @@
 defmodule App.Arrow.Operations.ChangeDirection do
-  import App.Game.Helper
   require Logger
 
   def call(x, y, player, board) do

@@ -1,6 +1,5 @@
 defmodule AppWeb.Plugs.NotAuthenticated do
   import Plug.Conn
-  import AppWeb.Router.Helpers
 
   def init(options) do
     options

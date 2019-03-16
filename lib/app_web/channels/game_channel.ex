@@ -2,6 +2,7 @@ defmodule AppWeb.GameChannel do
   use Phoenix.Channel
   alias App.Repo
   alias App.Game
+  alias App.Bot.Operations.Add, as: AddBot
   require Logger
 
   def join("game:" <> game_id, _params, socket) do
@@ -21,6 +22,11 @@ defmodule AppWeb.GameChannel do
       process -> 
         GenServer.cast(process, {:change_arrow, x, y, socket.assigns.user_id})
     end
+    {:noreply, socket}
+  end
+
+  def handle_in("add_bot", _, socket) do
+    AddBot.call(socket.assigns.game_id)
     {:noreply, socket}
   end
 

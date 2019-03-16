@@ -33,7 +33,6 @@ defmodule AppWeb.GameController do
     result = Exit.call(game_id)
 
     if success?(result) do
-      game = result.value
       conn
       |> redirect(to: "/")
     else

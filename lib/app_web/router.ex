@@ -41,8 +41,10 @@ defmodule AppWeb.Router do
     end
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", AppWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", AppWeb do
+    pipe_through :api
+
+    get "/ai_game/init", AiGameController, :init
+    post "/ai_game/move", AiGameController, :move
+  end
 end

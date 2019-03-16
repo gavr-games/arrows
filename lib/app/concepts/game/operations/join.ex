@@ -53,7 +53,7 @@ defmodule App.Game.Operations.Join do
       success(nil)
     end
   end
-  def find_new_game(user_id, game), do: success(game)
+  def find_new_game(_, game), do: success(game)
 
   def create_game(user_id, nil) do
     changeset = Game.changeset(%Game{}, %{status: game_status_code("new"), user1_id: user_id})
@@ -65,7 +65,7 @@ defmodule App.Game.Operations.Join do
         error(changeset)
     end
   end
-  def create_game(user_id, game), do: success(game)
+  def create_game(_, game), do: success(game)
 
 
 end

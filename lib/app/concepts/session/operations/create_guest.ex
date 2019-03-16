@@ -1,7 +1,6 @@
 defmodule App.Session.Operations.CreateGuest do
   use Monad.Operators
   import Monad.Result
-  alias App.User
   alias App.Session.Operations.Create, as: CreateSession
   alias App.User.Operations.Create, as: CreateUser
 

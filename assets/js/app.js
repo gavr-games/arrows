@@ -15,3 +15,13 @@ import "phoenix_html"
 //
 // Local files can be imported directly using relative paths, for example:
 import game from "./game/game"
+import Bot from "./bot"
+
+function initApp() {
+  $('#add-bot').click( e => {
+    e.preventDefault()
+    Bot.addNew()
+  })
+}
+
+initApp()

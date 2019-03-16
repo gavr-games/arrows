@@ -1,5 +1,4 @@
 defmodule App.Ball.Operations.Move do
-  import App.Game.Helper
 
   def call(ball) do
     {new_x, new_y} = case ball[:direction] do
