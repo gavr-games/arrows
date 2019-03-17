@@ -5,7 +5,7 @@ import random
 import numpy as np
 from operator import add
 
-LEARNING_RATE = 0.0005
+LEARNING_RATE = 0.0001
 GAMMA = 0.9
 ARROWS_COUNT = 9
 REWARD_BALL_HEALTH = 1
@@ -13,6 +13,10 @@ REWARD_PLAYER_BASE_HEALTH = 20
 REWARD_OPONENT_BASE_HEALTH = 30
 REWARD_ARROWS_COUNT = 2
 REWARD_CELLS_COUNT = 2
+REWARD_CHANGED_DIR = 1.0
+REWARD_NOT_CHANGED_DIR = -100
+
+np.set_printoptions(threshold=3000)
 
 class DQNAgent(object):
     
@@ -49,10 +53,12 @@ class DQNAgent(object):
       # Arrows
       for x in range(ARROWS_COUNT):
         for y in range(ARROWS_COUNT):
-          arrow = board['arrows'][str(x * 10)][str(y * 10)]
-          state[y][x][3] = 1 if arrow['player'] != None else 0 # has arrow
-          state[y][x][4] = 1 if arrow['player'] == player else 0 
-          state[y][x][5] = arrow['direction'] if arrow['direction'] != None else 0 
+          state_y = y * 2
+          state_x = x * 2
+          arrow = board['arrows'][str(y * 10)][str(x * 10)]
+          state[state_y][state_x][3] = 1 if arrow['player'] != None else 0 # has arrow
+          state[state_y][state_x][4] = 1 if arrow['player'] == player else 0 
+          state[state_y][state_x][5] = arrow['direction'] if arrow['direction'] != None else 0 
       
       # Balls
       for key, ball in board['balls'].items():
@@ -70,7 +76,7 @@ class DQNAgent(object):
     def coord_state(self, x):
       return (int) (x / 10 * 2)
     
-    def get_reward(self, game_engine, board, board_new, player):
+    def get_reward(self, game_engine, board, board_new, changed_dir, player):
       reward = 0
       opponent = 1 if player == 2 else 2
     
@@ -114,13 +120,18 @@ class DQNAgent(object):
       op_cells_new = game_engine.cells_count(board_new, opponent)
       reward -= (op_cells_new - op_cells) * REWARD_CELLS_COUNT
 
+      if changed_dir == True:
+        reward += REWARD_CHANGED_DIR
+      else:
+        reward = REWARD_NOT_CHANGED_DIR # show ai it is wrong to try to move not his arrows
+
       return reward
     
     def network(self, weights=None):
       model = Sequential()
-      model.add(Dense(units=512, activation='relu', input_dim=2890)) # field has 17x17 points, each point can have state described by 10 values
+      model.add(Dense(units=4048, activation='relu', input_dim=2890)) # field has 17x17 points, each point can have state described by 10 values
       model.add(Dropout(0.15))
-      model.add(Dense(units=512, activation='relu'))
+      model.add(Dense(units=2024, activation='relu'))
       model.add(Dropout(0.15))
       model.add(Dense(units=512, activation='relu'))
       model.add(Dropout(0.15))
@@ -141,6 +152,8 @@ class DQNAgent(object):
         target = reward + GAMMA * np.amax(self.model.predict(state_new)[0])
       target_f = self.model.predict(state)
       target_f[0][final_move] = target
+      target_f = self.set_arrow_rewards(state, target_f)
+      breakpoint()
       self.model.fit(state, target_f, epochs=1, verbose=0)
 
     def replay_new(self):
@@ -154,4 +167,23 @@ class DQNAgent(object):
           target = reward + GAMMA * np.amax(self.model.predict(state_new)[0])
         target_f = self.model.predict(state)
         target_f[0][final_move] = target
+        target_f = self.set_arrow_rewards(state, target_f)
         self.model.fit(state, target_f, epochs=1, verbose=0)
+      self.memory = []
+    
+    def set_arrow_rewards(self, state, target_f):
+      possible_moves = self.possible_moves(state)
+      for i in possible_moves:
+        if target_f[0][i] < REWARD_CHANGED_DIR:
+          target_f[0][i] = REWARD_CHANGED_DIR
+      return target_f
+    
+    def possible_moves(self, state):
+      moves = []
+      for x in range(ARROWS_COUNT):
+        for y in range(ARROWS_COUNT):
+          if state[0][(y * 17 + x) * 2 * 10 + 4] == 1.0: # my arrow
+            move = (y * ARROWS_COUNT + x) * 2
+            moves.append(move) # arrow dir 1
+            moves.append(move + 1) # arrow dir 2
+      return moves

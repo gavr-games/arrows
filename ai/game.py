@@ -21,7 +21,7 @@ class Game(object):
       if change_dir:
         board['arrows'][y][x]['direction'] = direction
 
-      return self.send_move(board)
+      return self.send_move(board), change_dir
     
     def format_move(self, board, move, player):
       arrow_pos, direction = divmod(move, 2) # 2 possible arrow dirs

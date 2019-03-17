@@ -14,7 +14,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     body = self.rfile.read(content_length)
     self.send_response(200)
     self.end_headers()
-
     board = json.loads(body)
     player = board["player2"]
     state = agent.get_state(board, player)

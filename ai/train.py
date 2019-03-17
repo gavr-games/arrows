@@ -1,11 +1,20 @@
 from random import randint
+import random
 import numpy as np
 from keras.utils import to_categorical
 from DQN import DQNAgent
 from game import Game
 from timeit import default_timer as timer
+#from keras.backend.tensorflow_backend import set_session
+#import tensorflow as tf
 
-GAMES_COUNT = 10
+#config = tf.ConfigProto()
+#config.intra_op_parallelism_threads = 1
+#config.inter_op_parallelism_threads = 1
+
+#set_session(tf.Session(config=config))
+
+GAMES_COUNT = 100
 EPSILON = 50
 RANDOM_MOVES_PROPORTION = 2.5
 PLAYER = 2
@@ -28,18 +37,20 @@ def run():
 
       #perform random actions based on agent.epsilon, or choose the action
       if randint(0, EPSILON * RANDOM_MOVES_PROPORTION) < agent.epsilon:
-        final_move = randint(0, 161) #9x9 arrows and each has 4 possible directions
+        final_move = random.choice(agent.possible_moves(state))
+        print("--- > random")
       else:
         # predict action based on the state
         prediction = agent.model.predict(state)
         final_move = np.argmax(prediction[0])
       
       #perform new move and get new state
-      board_new = game_engine.make_move(board, final_move, PLAYER)
+      board_new, changed_dir = game_engine.make_move(board, final_move, PLAYER)
       state_new = agent.get_state(board_new, PLAYER)
 
       #set treward for the new state
-      reward = agent.get_reward(game_engine, board, board_new, PLAYER)
+      reward = agent.get_reward(game_engine, board, board_new, changed_dir, PLAYER)
+      breakpoint()
 
       #train short memory base on the new action and state
       agent.train_short_memory(state, final_move, reward, state_new, game_engine.is_finished(board))
