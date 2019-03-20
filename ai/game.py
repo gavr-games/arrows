@@ -21,7 +21,7 @@ class Game(object):
       if change_dir:
         board['arrows'][y][x]['direction'] = direction
 
-      return self.send_move(board), change_dir
+      return board, change_dir
     
     def format_move(self, board, move, player):
       arrow_pos, direction = divmod(move, 2) # 2 possible arrow dirs
@@ -90,4 +90,9 @@ class Game(object):
           return True
       return False
 
+    def is_win(self, board, player):
+      for key, base in board['bases'].items():
+        if base['health'] > 0 and base['player'] == player:
+          return True
+      return False
       

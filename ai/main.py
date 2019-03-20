@@ -16,7 +16,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     self.end_headers()
     board = json.loads(body)
     player = board["player2"]
-    state = agent.get_state(board, player)
+    agent.player = player
+    state = agent.get_state(board)
     prediction = agent.model.predict(state)
     final_move = np.argmax(prediction[0])
     x, y, direction, change_dir = game_engine.format_move(board, final_move, player)

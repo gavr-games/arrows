@@ -23,6 +23,8 @@ class DQNAgent(object):
 
     def __init__(self, weights = None):
       self.memory = []
+      self.wins_count = 0
+      self.player = 0
       if weights == None:
         self.model = self.network()
       else:
@@ -39,8 +41,9 @@ class DQNAgent(object):
     # 7 - ball belongs to player
     # 8 - ball health
     # 9 - ball direction
-    def get_state(self, board, player):
+    def get_state(self, board):
       state = np.zeros((17,17,10))
+      player = self.player
 
       # Bases
       for key, base in board['bases'].items():
@@ -76,8 +79,9 @@ class DQNAgent(object):
     def coord_state(self, x):
       return (int) (x / 10 * 2)
     
-    def get_reward(self, game_engine, board, board_new, changed_dir, player):
+    def get_reward(self, game_engine, board, board_new, changed_dir):
       reward = 0
+      player = self.player
       opponent = 1 if player == 2 else 2
     
       # sum all healthes of my balls, difference with old state +-1
