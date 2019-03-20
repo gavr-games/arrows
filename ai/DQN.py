@@ -14,7 +14,7 @@ REWARD_OPONENT_BASE_HEALTH = 30
 REWARD_ARROWS_COUNT = 2
 REWARD_CELLS_COUNT = 2
 REWARD_CHANGED_DIR = 1.0
-REWARD_NOT_CHANGED_DIR = -100
+REWARD_NOT_CHANGED_DIR = -1.0
 
 np.set_printoptions(threshold=3000)
 
@@ -130,9 +130,9 @@ class DQNAgent(object):
     def network(self, weights=None):
       model = Sequential()
       model.add(Dense(units=4048, activation='relu', input_dim=2890)) # field has 17x17 points, each point can have state described by 10 values
-      model.add(Dropout(0.15))
+      model.add(Dropout(0.25))
       model.add(Dense(units=2024, activation='relu'))
-      model.add(Dropout(0.15))
+      model.add(Dropout(0.20))
       model.add(Dense(units=512, activation='relu'))
       model.add(Dropout(0.15))
       model.add(Dense(units=162, activation='softmax')) # output is 9x9 arrows and each has 2 possible directions
@@ -152,8 +152,7 @@ class DQNAgent(object):
         target = reward + GAMMA * np.amax(self.model.predict(state_new)[0])
       target_f = self.model.predict(state)
       target_f[0][final_move] = target
-      target_f = self.set_arrow_rewards(state, target_f)
-      breakpoint()
+      #target_f = self.set_arrow_rewards(state, target_f)
       self.model.fit(state, target_f, epochs=1, verbose=0)
 
     def replay_new(self):
@@ -167,7 +166,7 @@ class DQNAgent(object):
           target = reward + GAMMA * np.amax(self.model.predict(state_new)[0])
         target_f = self.model.predict(state)
         target_f[0][final_move] = target
-        target_f = self.set_arrow_rewards(state, target_f)
+        #target_f = self.set_arrow_rewards(state, target_f)
         self.model.fit(state, target_f, epochs=1, verbose=0)
       self.memory = []
     

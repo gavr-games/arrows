@@ -38,7 +38,6 @@ def run():
       #perform random actions based on agent.epsilon, or choose the action
       if randint(0, EPSILON * RANDOM_MOVES_PROPORTION) < agent.epsilon:
         final_move = random.choice(agent.possible_moves(state))
-        print("--- > random")
       else:
         # predict action based on the state
         prediction = agent.model.predict(state)
@@ -50,7 +49,6 @@ def run():
 
       #set treward for the new state
       reward = agent.get_reward(game_engine, board, board_new, changed_dir, PLAYER)
-      breakpoint()
 
       #train short memory base on the new action and state
       agent.train_short_memory(state, final_move, reward, state_new, game_engine.is_finished(board))

@@ -43,7 +43,10 @@ class Game(object):
       return str(x * 10), str(y * 10), direction, change_dir
 
     def send_move(self, board):
+      # make 2 moves to get possible reward when ball captures arraow, ball is not able to capture arrow in 1 tick
       r = requests.post(GAME_MOVE_URL, json=board)
+      new_board = r.json()
+      r = requests.post(GAME_MOVE_URL, json=new_board)
       return r.json()
     
     def balls_health(self, board, player):
