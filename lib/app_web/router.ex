@@ -39,6 +39,9 @@ defmodule AppWeb.Router do
       get "/play", GameController, :play
       get "/exit", GameController, :exit
     end
+
+    get "/game_histories", GameHistoryController, :list
+    get "/game_histories/:game_id", GameHistoryController, :show
   end
 
   scope "/api", AppWeb do

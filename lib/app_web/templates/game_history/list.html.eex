@@ -1,0 +1,8 @@
+<h1>Games history</h1>
+<ul class="list-group">
+<%= for game_id <- @games do %>
+  <li class="list-group-item">
+    <a href="/game_histories/<%= game_id %>"><%= game_id %></a>
+  </li>
+<% end %>
+</ul>

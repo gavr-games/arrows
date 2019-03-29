@@ -1,7 +1,7 @@
 defmodule App.Arrow.Operations.ChangeDirection do
   require Logger
 
-  def call(x, y, player, board) do
+  def call(board, x, y, player) do
     arrow = board[:arrows][y][x]
     if arrow[:player] != player do
       board

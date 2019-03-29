@@ -1,0 +1,59 @@
+<h1> History for game <%= @game_id %> </h1>
+
+<h2>States</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Turn</th>
+      <th scope="col">State</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for game_state <- @game_states do %>
+    <tr>
+      <td><%= game_state[:turn] %></td>
+      <td>
+        <a class="btn btn-primary" data-toggle="collapse" href="#collapse-<%= game_state[:turn] %>" role="button" aria-expanded="false" aria-controls="collapse-<%= game_state[:turn] %>">
+          Show state
+        </a>
+        <div class="collapse" id="collapse-<%= game_state[:turn] %>">
+          <div class="card card-body">
+            <pre>
+            <%= Poison.encode!(game_state[:state], pretty: true) %>
+            </pre>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2>Moves</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Turn</th>
+      <th scope="col">Move</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for game_move <- @game_moves do %>
+    <tr>
+      <td><%= game_move[:turn] %></td>
+      <td>
+        <a class="btn btn-primary" data-toggle="collapse" href="#collapse-<%= game_move[:turn] %>" role="button" aria-expanded="false" aria-controls="collapse-<%= game_move[:turn] %>">
+          Show move
+        </a>
+        <div class="collapse" id="collapse-<%= game_move[:turn] %>">
+          <div class="card card-body">
+            <pre>
+            <%= Poison.encode!(game_move[:move], pretty: true) %>
+            </pre>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

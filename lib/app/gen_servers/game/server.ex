@@ -4,11 +4,15 @@ defmodule App.Game.Server do
   import App.Game.Helper
   alias App.Repo
   alias App.User
+  alias App.GameState
+  alias App.GameMove
   alias App.Board.Operations.{Init, Update}
   alias App.Game.Operations.Exit
   alias App.Arrow.Operations.ChangeDirection
   alias App.Ball.Operations.Jump
   alias App.Bot.Operations.Move, as: BotMove
+
+  @not_active_turns_limit 30
 
   def create(game) do
     case GenServer.whereis(ref(game.id)) do
@@ -42,7 +46,9 @@ defmodule App.Game.Server do
       1 -> #running
         schedule_timer()
         init_bot(state[:game])
-        {:noreply, Map.put(state, :board, Init.call(state[:game]))}
+        board = Init.call(state[:game])
+        Task.async(fn -> save_game_state(state[:game].id, board) end)
+        {:noreply, Map.put(state, :board, board)}
       0 -> #new
         {:noreply, state}
       _ ->
@@ -57,7 +63,8 @@ defmodule App.Game.Server do
       1 -> #running
         board = Update.call(state[:board])
         AppWeb.Endpoint.broadcast "game:#{state[:game].id}", "update", board
-        if board[:bases][0][:health] <= 0 || board[:bases][1][:health] <= 0 do
+        Task.async(fn -> save_game_state(state[:game].id, state[:board]) end)
+        if board[:bases][0][:health] <= 0 || board[:bases][1][:health] <= 0 || board[:turn] - board[:last_move_turn] >= @not_active_turns_limit do
           Exit.call(state[:game].id)
         else
           schedule_timer()
@@ -124,15 +131,20 @@ defmodule App.Game.Server do
   def handle_cast({:change_arrow, x, y, player}, state) do
     game_id = state[:game].id
     Logger.info "Change arrow for game with id #{game_id}"
-    board = ChangeDirection.call(x, y, player, state[:board])
+    board = state[:board]
+      |> ChangeDirection.call(x, y, player)
+      |> Map.put(:last_move_turn, state[:board][:turn])
     AppWeb.Endpoint.broadcast "game:#{state[:game].id}", "update_arrow", %{arrow: board[:arrows][y][x]}
+    Task.async(fn -> save_game_move(state[:game].id, board[:arrows][y][x], board) end)
     {:noreply, Map.put(state, :board, board)}
   end
 
   def handle_cast({:jump_ball, ball_id, player}, state) do
     game_id = state[:game].id
     Logger.info "Jump ball for game with id #{game_id}"
-    board = Jump.call(state[:board], ball_id, player)
+    board = state[:board]
+      |> Jump.call(ball_id, player)
+      |> Map.put(:last_move_turn, state[:board][:turn])
     {:noreply, Map.put(state, :board, board)}
   end
 
@@ -142,5 +154,32 @@ defmodule App.Game.Server do
       nil -> nil
       _ -> Process.send_after self(), :move_bot, Kernel.trunc(game_tick() / 2)
     end
+  end
+
+  defp save_game_state(game_id, board) do
+    %GameState{}
+      |> GameState.changeset(%{game_id: game_id, state: board, turn: board[:turn]})
+      |> Repo.insert
+  end
+
+  defp save_game_move(game_id, move, board) do
+    %GameMove{}
+      |> GameMove.changeset(%{game_id: game_id, move: move, turn: board[:turn]})
+      |> Repo.insert
+  end
+
+  # handle_info/2 receives generic messages from the Task processes
+  def handle_info({_task, {:ok, result}}, state) do
+    Logger.info("Task done.")
+    {:noreply, state}
+  end
+
+  def handle_info({_task, {:error, reason}}, state) do
+    Logger.error("Failed to complete task: #{reason}")
+    {:noreply, state}
+  end
+
+  def handle_info({:DOWN, _down_ref, :process, _pid, _reason}, state) do
+    {:noreply, state}
   end
 end

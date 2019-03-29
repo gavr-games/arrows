@@ -21,6 +21,7 @@ defmodule App.Board.Operations.Init do
       player1: game.user1_id,
       player2: game.user2_id,
       turn: 0,
+      last_move_turn: 0,
       arrows: prepare_arrows(game, config, config[:rows], config[:cols], %{}),
       balls: %{},
       bases: %{
