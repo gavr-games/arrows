@@ -24,6 +24,5 @@ Now you can visit [`localhost`](http://localhost) from your browser.
 * championships
 * delete guest users
 * no "Draw" if someone exits
-* delete games with no actions taken
 * tutorial
 * real time lag, ping to server
