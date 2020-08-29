@@ -2,7 +2,7 @@ defmodule App.Cell.Operations.CountPerPlayer do
   require Logger
 
   def call(player, board) do
-    coords = for i <- 0..9, j <- 0..9, do:  {i, j}
+    coords = for i <- 0..(board[:config][:cols] - 1), j <- 0..(board[:config][:rows] - 1), do:  {i, j}
     coords
       |> Enum.map(fn {x, y} -> check_cell(x, y, player, board) end)
       |> Enum.sum()

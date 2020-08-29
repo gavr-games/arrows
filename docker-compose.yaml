@@ -14,16 +14,16 @@ services:
     depends_on:
       - db
 
-  ai:
-    build:
-      context: ./ai
-    ports:
-      - 8000:8000
-    env_file: .env
-    volumes:
-      - ./ai:/app
-    depends_on:
-      - web
+#  ai:
+#    build:
+#      context: ./ai
+#    ports:
+#      - 8000:8000
+#    env_file: .env
+#    volumes:
+#      - ./ai:/app
+#    depends_on:
+#      - web
 
   db:
     image: postgres:11.1

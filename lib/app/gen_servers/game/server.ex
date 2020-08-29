@@ -12,7 +12,7 @@ defmodule App.Game.Server do
   alias App.Ball.Operations.Jump
   alias App.Bot.Operations.Move, as: BotMove
 
-  @not_active_turns_limit 30
+  @not_active_turns_limit 300
 
   def create(game) do
     case GenServer.whereis(ref(game.id)) do
@@ -169,7 +169,7 @@ defmodule App.Game.Server do
   end
 
   # handle_info/2 receives generic messages from the Task processes
-  def handle_info({_task, {:ok, result}}, state) do
+  def handle_info({_task, {:ok, _result}}, state) do
     Logger.info("Task done.")
     {:noreply, state}
   end

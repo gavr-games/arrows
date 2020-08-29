@@ -34,10 +34,8 @@ class Arrow {
       this.sprite.originalX = this.originalX
       this.sprite.originalY = this.originalY
     }
-    if (this.direction != direction) {
-      this.direction = direction
-      this.sprite.angle = direction * 90
-    }
+    this.direction = direction
+    this.sprite.angle = direction * 90
   }
 
   onClick() {
