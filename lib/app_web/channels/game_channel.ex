@@ -25,8 +25,8 @@ defmodule AppWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_in("add_bot", _, socket) do
-    AddBot.call(socket.assigns.game_id)
+  def handle_in("add_bot", %{"difficulty" => difficulty}, socket) do
+    AddBot.call(socket.assigns.game_id, difficulty)
     {:noreply, socket}
   end
 

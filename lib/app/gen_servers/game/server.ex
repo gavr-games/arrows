@@ -45,8 +45,8 @@ defmodule App.Game.Server do
     case state[:game].status do
       1 -> #running
         schedule_timer()
-        init_bot(state[:game])
         board = Init.call(state[:game])
+          |> init_bot(state[:game])
         Task.async(fn -> save_game_state(state[:game].id, board) end)
         {:noreply, Map.put(state, :board, board)}
       0 -> #new
@@ -95,9 +95,10 @@ defmodule App.Game.Server do
   def handle_info(%{event: "start"}, state) do
     game_id = state[:game].id
     Logger.info "Start game with id #{game_id}"
-    init_bot(state[:game])
+    board = Init.call(state[:game])
+      |> init_bot(state[:game])
     schedule_timer()
-    {:noreply, %{game: Map.put(state[:game], :status, game_status_code("running")), board: Init.call(state[:game])}}
+    {:noreply, %{game: Map.put(state[:game], :status, game_status_code("running")), board: board}}
   end
 
   def handle_info(%{event: "finish"}, state) do
@@ -148,11 +149,13 @@ defmodule App.Game.Server do
     {:noreply, Map.put(state, :board, board)}
   end
 
-  defp init_bot(game) do
+  defp init_bot(board, game) do
     user2 = Repo.get!(User, game.user2_id)
     case user2.is_bot do
-      nil -> nil
-      _ -> Process.send_after self(), :move_bot, Kernel.trunc(game_tick() / 2)
+      nil -> board
+      _ -> 
+        Process.send_after self(), :move_bot, Kernel.trunc(game_tick() / 2)
+        put_in board[:config][:bot_difficulty], user2.bot_difficulty
     end
   end
 

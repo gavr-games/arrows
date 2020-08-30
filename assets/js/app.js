@@ -9,19 +9,19 @@ import css from "../css/app.css"
 //
 // Import dependencies
 //
-import "phoenix_html"
+import "phoenix_html";
 
 // Import local files
 //
 // Local files can be imported directly using relative paths, for example:
-import game from "./game/game"
-import Bot from "./bot"
+import game from "./game/game";
+import Bot from "./bot";
 
 function initApp() {
   $('#add-bot').click( e => {
-    e.preventDefault()
-    Bot.addNew()
-  })
+    e.preventDefault();
+    Bot.addNew($('#bot-difficulty').val());
+  });
 }
 
-initApp()
+initApp();

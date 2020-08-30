@@ -1,8 +1,8 @@
-import {channel} from "./socket"
+import {channel} from "./socket";
 
 class Bot {
-  static addNew() {
-    channel.push("add_bot", {})
+  static addNew(difficulty) {
+    channel.push("add_bot", { difficulty: difficulty });
   }
 }
 

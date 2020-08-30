@@ -6,11 +6,11 @@ defmodule App.Bot.Operations.Add do
   alias App.User.Operations.Create, as: CreateUser
   require Logger
 
-  def call(game_id) do
+  def call(game_id, bot_difficulty) do
     result = success(game_id)
              ~>> fn game_id -> find_game(game_id) end
              ~>> fn game -> check_game(game) end
-             ~>> fn game -> add_bot(game) end
+             ~>> fn game -> add_bot(game, bot_difficulty) end
 
     if success?(result) do
       success(unwrap!(result))
@@ -36,12 +36,13 @@ defmodule App.Bot.Operations.Add do
     end
   end
 
-  def add_bot(game) do
+  def add_bot(game, bot_difficulty) do
     Faker.start()
     result = CreateUser.call(%{
       "name" => "#{Faker.Name.En.first_name()}Bot", 
       "password" => Faker.UUID.v4(), 
-      "is_bot" => true
+      "is_bot" => true,
+      "bot_difficulty" => bot_difficulty
     })
 
     if success?(result) do
